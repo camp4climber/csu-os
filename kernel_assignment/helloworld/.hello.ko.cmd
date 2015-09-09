@@ -1,0 +1,1 @@
+cmd_/home/tim/kernel_assignment/helloworld/hello.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/tim/kernel_assignment/helloworld/hello.ko /home/tim/kernel_assignment/helloworld/hello.o /home/tim/kernel_assignment/helloworld/hello.mod.o
