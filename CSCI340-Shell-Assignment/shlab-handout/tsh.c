@@ -167,13 +167,13 @@ void eval(char *cmdline)
     {
       addjob(jobs, pid, FG, cmdline);
       sigprocmask(SIG_UNBLOCK, &mask, NULL);
-//      waitfg(pid);
+      waitfg(pid);
     }
     else 
     {
       addjob(jobs, pid, BG, cmdline);
+      printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
       sigprocmask(SIG_UNBLOCK, &mask, NULL);
-      printf("%d %s", pid, cmdline);
     }
   }
 
@@ -288,6 +288,15 @@ void sigchld_handler(int sig)
 
   while ((pid = waitpid(WAIT_ANY, &status, WNOHANG|WUNTRACED)) > 0)
   {
+    if (WIFSIGNALED(status))
+    {
+      printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
+    }
+    if (WIFSTOPPED(status))
+    {
+      printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+      return; 
+    }
     deletejob(jobs, pid);
   }
   return;
@@ -317,6 +326,13 @@ void sigint_handler(int sig)
 //
 void sigtstp_handler(int sig)
 {
+  pid_t pid = fgpid(jobs);
+  if (pid)
+  {
+    kill(-pid, SIGTSTP);
+    struct job_t *job = getjobpid(jobs, pid);
+    job->state = ST;
+  }
   return;
 }
 
