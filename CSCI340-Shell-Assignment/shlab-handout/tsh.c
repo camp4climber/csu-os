@@ -19,7 +19,6 @@
 #include "helper-routines.h"
 
 
-
 /* Global variables */
 
 char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
@@ -135,11 +134,43 @@ void eval(char *cmdline)
   // in background mode or FALSE if it should run in FG
   //
   int bg = parseline(cmdline, argv);
+  pid_t pid;
+
   if (argv[0] == NULL)
     return;   /* ignore empty lines */
 
   if (!builtin_cmd(argv))
   {
+    pid = fork();
+
+    if (pid == 0)
+    {
+      setpgid(0, 0);
+      
+      //bg jobs should ignore interrupt and stop signals
+      if (bg)
+      {
+        Signal(SIGINT, SIG_IGN);
+        Signal(SIGTSTP, SIG_IGN);
+      }
+      if (execv(argv[0], argv) == -1)
+      {
+        printf("Command does not exist.\n");
+        exit(0);
+      }
+    }
+    
+    //parent waits for fg job
+    if (!bg) 
+    {
+      addjob(jobs, pid, FG, cmdline);
+      waitfg(pid);
+    }
+    else 
+    {
+      addjob(jobs, pid, BG, cmdline);
+      printf("%d %s", pid, cmdline);
+    }
   }
 
   return;
