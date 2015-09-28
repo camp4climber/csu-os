@@ -157,7 +157,7 @@ void eval(char *cmdline)
 
       if (execv(argv[0], argv) == -1)
       {
-        printf("Command does not exist.\n");
+        printf("%s: Command not found.\n", argv[0]);
       }
       exit(0);
     }
@@ -167,7 +167,7 @@ void eval(char *cmdline)
     {
       addjob(jobs, pid, FG, cmdline);
       sigprocmask(SIG_UNBLOCK, &mask, NULL);
-      waitfg(pid);
+//      waitfg(pid);
     }
     else 
     {
@@ -262,6 +262,8 @@ void do_bgfg(char **argv)
 //
 void waitfg(pid_t pid)
 {
+  //busy loop so sigchld handler can call aitpid and do the reaping
+  while(fgpid(jobs) == pid) {sleep(1);}
   return;
 }
 
@@ -292,6 +294,11 @@ void sigchld_handler(int sig)
 //
 void sigint_handler(int sig)
 {
+  pid_t pid = fgpid(jobs);
+  if (pid)
+  {
+    kill(-pid, SIGINT);
+  }
   return;
 }
 
