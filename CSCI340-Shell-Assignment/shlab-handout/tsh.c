@@ -135,40 +135,44 @@ void eval(char *cmdline)
   //
   int bg = parseline(cmdline, argv);
   pid_t pid;
+  sigset_t mask;
 
   if (argv[0] == NULL)
     return;   /* ignore empty lines */
 
   if (!builtin_cmd(argv))
   {
+    //procmask needs to block child signals to avoid race condition
+    //where child is reaped before added to job list
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
     pid = fork();
 
     if (pid == 0)
     {
       setpgid(0, 0);
-      
-      //bg jobs should ignore interrupt and stop signals
-      if (bg)
-      {
-        Signal(SIGINT, SIG_IGN);
-        Signal(SIGTSTP, SIG_IGN);
-      }
+      sigprocmask(SIG_UNBLOCK, &mask, NULL);      
+
       if (execv(argv[0], argv) == -1)
       {
         printf("Command does not exist.\n");
-        exit(0);
       }
+      exit(0);
     }
     
     //parent waits for fg job
     if (!bg) 
     {
       addjob(jobs, pid, FG, cmdline);
+      sigprocmask(SIG_UNBLOCK, &mask, NULL);
       waitfg(pid);
     }
     else 
     {
       addjob(jobs, pid, BG, cmdline);
+      sigprocmask(SIG_UNBLOCK, &mask, NULL);
       printf("%d %s", pid, cmdline);
     }
   }
