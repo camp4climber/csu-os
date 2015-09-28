@@ -283,6 +283,13 @@ void waitfg(pid_t pid)
 //
 void sigchld_handler(int sig)
 {
+  pid_t pid;
+  int status;
+
+  while ((pid = waitpid(WAIT_ANY, &status, WNOHANG|WUNTRACED)) > 0)
+  {
+    deletejob(jobs, pid);
+  }
   return;
 }
 
