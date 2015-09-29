@@ -284,7 +284,7 @@ void do_bgfg(char **argv)
 //
 void waitfg(pid_t pid)
 {
-  //busy loop so sigchld handler can call aitpid and do the reaping
+  //busy loop so sigchld handler can call waitpid and do the reaping
   while(fgpid(jobs) == pid) {sleep(1);}
   return;
 }
