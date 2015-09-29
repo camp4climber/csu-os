@@ -18,7 +18,6 @@
 #include "jobs.h"
 #include "helper-routines.h"
 
-
 /* Global variables */
 
 char prompt[] = "tsh> ";    /* command line prompt (DO NOT CHANGE) */
@@ -251,8 +250,31 @@ void do_bgfg(char **argv)
   // so we've converted argv[0] to a string (cmd) for
   // your benefit.
   //
-  
 
+  int current_state = getjobpid(jobs, jobp->pid)->state;  
+
+  if (current_state == BG)
+  {
+    if (!strcmp(argv[0], "fg"))
+    {
+      jobp->state = FG;
+      waitfg(jobp->pid);
+    }
+  }
+  else if (current_state == ST)
+  {
+    if (!strcmp(argv[0], "fg"))
+    {
+      jobp->state = FG;
+      kill(-jobp->pid, SIGCONT);
+      waitfg(jobp->pid);
+    }
+    else if (!strcmp(argv[0], "bg"))
+    {
+      jobp->state = BG;
+      kill(-jobp->pid, SIGCONT);
+    }
+  }
   return;
 }
 
