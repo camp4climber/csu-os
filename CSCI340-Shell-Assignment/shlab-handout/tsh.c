@@ -160,19 +160,20 @@ void eval(char *cmdline)
       }
       exit(0);
     }
-    
+    else { 
     //parent waits for fg job
-    if (!bg) 
-    {
-      addjob(jobs, pid, FG, cmdline);
-      sigprocmask(SIG_UNBLOCK, &mask, NULL);
-      waitfg(pid);
-    }
-    else 
-    {
-      addjob(jobs, pid, BG, cmdline);
-      printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
-      sigprocmask(SIG_UNBLOCK, &mask, NULL);
+      if (!bg) 
+      {
+        addjob(jobs, pid, FG, cmdline);
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+        waitfg(pid);
+      }
+      else 
+      {
+        addjob(jobs, pid, BG, cmdline);
+        printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+      }
     }
   }
 
@@ -351,9 +352,8 @@ void sigtstp_handler(int sig)
   pid_t pid = fgpid(jobs);
   if (pid)
   {
+    getjobpid(jobs, pid)->state = ST;
     kill(-pid, SIGTSTP);
-    struct job_t *job = getjobpid(jobs, pid);
-    job->state = ST;
   }
   return;
 }
