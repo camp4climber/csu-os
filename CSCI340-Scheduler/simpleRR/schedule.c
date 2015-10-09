@@ -16,6 +16,7 @@ struct Node
 
 struct Node *front = NULL;
 struct Node *back = NULL;
+struct Node *current = NULL;
 
 /**
  * Function to initialize any global variables for the scheduler.
@@ -107,7 +108,21 @@ int nextProcess(int *time){
     if (!hasProcess()) return -1;
     else
     {
-       return front->pid;
+       //getting process for first time
+       if (current == NULL)
+       {
+           current = front;
+           return current->pid;
+       }
+       //back process
+       if (current->next == NULL)
+       {
+           current = front;
+           return current->pid;
+       }
+       //everything else
+       current = current->next;
+       return current->pid;
     }
 }
 
