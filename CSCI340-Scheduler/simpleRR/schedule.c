@@ -108,6 +108,7 @@ int nextProcess(int *time){
     if (!hasProcess()) return -1;
     else
     {
+       *time = 4;
        //getting process for first time
        if (current == NULL)
        {
