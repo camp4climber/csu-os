@@ -9,14 +9,40 @@ struct Node
 {
     int pid;
     int priority;
-    int quanta;
     struct Node *next;
     struct Node *previous;
 };
 
-struct Node *front = NULL;
-struct Node *back = NULL;
-struct Node *current = NULL;
+struct Queue 
+{
+    int quanta;
+    struct Node *front;
+    struct Node *back;
+    struct Node *current_node;
+};
+
+struct Queue* current_queue = NULL;
+
+struct Queue *queue1 = (struct Queue*)malloc(sizeof(struct Queue));
+queue1->quanta = 4;
+queue1->front = NULL;
+queue1->back = NULL;
+queue1->current_node = NULL;
+struct Queue *queue2 = (struct Queue*)malloc(sizeof(struct Queue));
+queue2->quanta = 3;
+queue2->front = NULL;
+queue2->back = NULL;
+queue2->current_node = NULL;
+struct Queue *queue3 = (struct Queue*)malloc(sizeof(struct Queue));
+queue3->quanta = 2;
+queue3->front = NULL;
+queue3->back = NULL;
+queue3->current_node = NULL;
+struct Queue *queue4 = (struct Queue*)malloc(sizeof(struct Queue));
+queue4->quanta = 1;
+queue4->front = NULL;
+queue4->back = NULL;
+queue4->current_node = NULL;
 
 /**
  * Function to initialize any global variables for the scheduler.
@@ -39,7 +65,10 @@ int addProcess(int pid, int priority){
     switch(priority)
     {
         case 1:
-            temp->quanta = 4;
+            if (queue1->front == NULL && queue1->back == NULL)
+            {
+                queue1->front = queue1->back = temp;
+            }
             break;
         case 2:
             temp->quanta = 3;
