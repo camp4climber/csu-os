@@ -1,7 +1,20 @@
+/***************
+Tim Whitaker
+***************/
+
 #include "schedule.h"
 #include <stdlib.h>
 #include <stdio.h>
 
+struct Node 
+{
+    int pid;
+    int quanta;
+    struct Node *next;
+};
+
+struct Node *front = NULL;
+struct Node *back = NULL;
 
 /**
  * Function to initialize any global variables for the scheduler.
@@ -17,7 +30,21 @@ void init(){
  * @return true/false response for if the addition was successful
  */
 int addProcess(int pid){
-	return 0;
+    struct Node *temp = (struct Node*)malloc(sizeof(struct Node));
+    temp->pid = pid;
+    temp->quanta = 4;
+    temp->next = NULL;
+  
+    if (hasProcess())
+    {
+        back->next = temp;
+        back = temp;
+    }
+    else
+    {
+        front = back = temp;
+    }
+    return 0;
 }
 
 /**
