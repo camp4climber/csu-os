@@ -11,6 +11,7 @@ struct Node
     int pid;
     int quanta;
     struct Node *next;
+    struct Node *previous;
 };
 
 struct Node *front = NULL;
@@ -34,10 +35,12 @@ int addProcess(int pid){
     temp->pid = pid;
     temp->quanta = 4;
     temp->next = NULL;
+    temp->previous = NULL;
   
     if (hasProcess())
     {
         back->next = temp;
+        temp->previous = back;
         back = temp;
     }
     else
@@ -75,5 +78,5 @@ int nextProcess(int *time){
  *		scheduled processes
  */
 int hasProcess(){
-	return 0;
+    return (front == NULL && back == NULL) ? 0 : 1;
 }
