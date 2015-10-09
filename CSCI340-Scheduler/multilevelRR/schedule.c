@@ -89,6 +89,8 @@ int removeProcess(int pid){
         if (front == back)
         {
             front = back = NULL;
+            free(temp);
+            return 1;
         }
         //front node
         if (temp == front)
