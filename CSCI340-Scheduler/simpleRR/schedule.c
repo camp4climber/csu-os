@@ -57,8 +57,44 @@ int addProcess(int pid){
  * @Return true/false response for if the removal was successful
  */
 int removeProcess(int pid){
-
-  return 0;
+    if (!hasProcess()) return 0;
+    else 
+    {
+        struct Node *temp = front;
+        while (temp->pid != pid)
+        {
+            if (temp->next == NULL) return 0;
+            else temp = temp->next;
+        }
+        //only 1 node
+        if (front == back) 
+        {
+            front = back = NULL;
+            free(temp); 
+            return 1;
+        }
+        //front node
+        if (temp == front)
+        {
+            front = temp->next;
+            front->previous = NULL;
+            free(temp);
+            return 1;
+        }
+        //back node
+        if (temp == back)
+        {
+            back = temp->previous;
+            back->next = NULL;
+            free(temp);
+            return 1;
+        }
+        //middle node
+        temp->previous->next = temp->next;
+        temp->next->previous = temp->previous;
+        free(temp);
+    }
+    return 1;
 }
 /**
  * Function to get the next process from the scheduler
@@ -68,7 +104,11 @@ int removeProcess(int pid){
  *      executed, returns -1 if there are no processes
  */
 int nextProcess(int *time){
-  return -1;
+    if (!hasProcess()) return -1;
+    else
+    {
+       return front->pid;
+    }
 }
 
 /**
