@@ -9,7 +9,6 @@ Tim Whitaker
 struct Node 
 {
     int pid;
-    int quanta;
     struct Node *next;
     struct Node *previous;
 };
@@ -34,7 +33,6 @@ void init(){
 int addProcess(int pid){
     struct Node *temp = (struct Node*)malloc(sizeof(struct Node));
     temp->pid = pid;
-    temp->quanta = 4;
     temp->next = NULL;
     temp->previous = NULL;
   
