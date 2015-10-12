@@ -39,37 +39,41 @@ void init(){
  * to age the scheduled processes and trigger feedback if needed.
  */
 void age(){
-/*    struct Node *temp;
+    struct Node *temp;
+    int pid;
+
     if (queue1->front != NULL)
     {
         temp = queue1->front;
-        temp->age++;
+        temp->age += 1;
         while(temp->next != NULL)
         {
             temp = temp->next;
             temp->age++;
             if (temp->age > 1000)
             {
-                removeProcess(temp->pid);
-                addProcess(temp->pid, 0);
+                pid = temp->pid;
+                removeProcess(pid);
+                addProcess(pid, 0);
             }
         }
     }
     if (queue2->front != NULL)
     {
         temp = queue2->front;
-        temp->age++;
+        temp->age += 1;
         while(temp->next != NULL)
         {
             temp = temp->next;
             temp->age++;
             if (temp->age > 1000)
             {
-                removeProcess(temp->pid);
-                addProcess(temp->pid, 0);
+                pid = temp->pid;
+                removeProcess(pid);
+                addProcess(pid, 0);
             }
         }
-    }*/
+    }
 }
 
 /**
