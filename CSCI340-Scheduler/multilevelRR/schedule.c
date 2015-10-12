@@ -19,7 +19,6 @@ struct Queue
     struct Queue *next_queue;
     struct Node *front;
     struct Node *back;
-    struct Node *current_node;
 };
 
 struct Queue *current_queue = NULL;
@@ -57,7 +56,6 @@ int addProcess(int pid, int priority){
                 queue1->quanta = 4;
                 queue1->front = NULL;
                 queue1->back = NULL;
-                queue1->current_node = NULL;
             }
             if (queue1->front == NULL && queue1->back == NULL)
             {
@@ -77,7 +75,6 @@ int addProcess(int pid, int priority){
                 queue2->quanta = 3;
                 queue2->front = NULL;
                 queue2->back = NULL;
-                queue2->current_node = NULL;
             }
             if (queue2->front == NULL && queue2->back == NULL)
             {
@@ -97,7 +94,6 @@ int addProcess(int pid, int priority){
                 queue3->quanta = 2;
                 queue3->front = NULL;
                 queue3->back = NULL;
-                queue3->current_node = NULL;
             }
             if (queue3->front == NULL && queue3->back == NULL)
             {
@@ -117,7 +113,6 @@ int addProcess(int pid, int priority){
                 queue4->quanta = 1;
                 queue4->front = NULL;
                 queue4->back = NULL;
-                queue4->current_node = NULL;
             }
             if (queue4->front == NULL && queue4->back == NULL)
             {
@@ -188,7 +183,6 @@ int removeProcess(int pid){
         //only 1 node
         if (temp_queue->front == temp_queue->back)
         {
-            temp_queue->current_node = NULL;
             temp_queue->front = temp_queue->back = NULL;
             free(temp);
             return 1;
@@ -226,7 +220,7 @@ int removeProcess(int pid){
 int nextProcess(int *time){
     if (!hasProcess()) return -1;
     else
-    {
+    { 
         //getting process for first time
         if (current_queue == NULL)
         {
@@ -236,81 +230,46 @@ int nextProcess(int *time){
             else if (queue4->front != NULL) current_queue = queue4;
 
             *time = current_queue->quanta;
-            current_queue->current_node = current_queue->front;
-            return current_queue->current_node->pid; 
+	    return current_queue->front->pid;
         }
+        if (current_queue->front != NULL)
+        {
+            int pid = current_queue->front->pid;
+            int priority = current_queue->front->priority;
+            removeProcess(pid);
+            addProcess(pid, priority);   
+        }
+        
         if (current_queue == queue1)
         {
             if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
             else if (queue1->front != NULL) current_queue = queue1;
-
-            *time = current_queue->quanta;
-            //no current process or last process in queue 
-            if (current_queue->current_node == NULL ||
-                current_queue->current_node->next == NULL)
-            {
-                current_queue->current_node = current_queue->front;
-                return current_queue->current_node->pid;
-            }
-            current_queue->current_node = current_queue->current_node->next;
-            return current_queue->current_node->pid;
         }
-        if (current_queue == queue2)
+        else if (current_queue == queue2)
         {
             if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
             else if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
-
-            *time = current_queue->quanta;
-            //no current process or last process in queue 
-            if (current_queue->current_node == NULL ||
-                current_queue->current_node->next == NULL)
-            {
-                current_queue->current_node = current_queue->front;
-                return current_queue->current_node->pid;
-            }
-            current_queue->current_node = current_queue->current_node->next;
-            return current_queue->current_node->pid;
         }
-        if (current_queue == queue3)
+        else if (current_queue == queue3)
         {
             if (queue4->front != NULL) current_queue = queue4;
             else if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
-
-            *time = current_queue->quanta;
-            //no current process or last process in queue 
-            if (current_queue->current_node == NULL ||
-                current_queue->current_node->next == NULL)
-            {
-                current_queue->current_node = current_queue->front;
-                return current_queue->current_node->pid;
-            }
-            current_queue->current_node = current_queue->current_node->next;
-            return current_queue->current_node->pid;
         }
-        if (current_queue == queue4)
+        else if (current_queue == queue4)
         {
             if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
-
-            *time = current_queue->quanta;
-            //no current process or last process in queue 
-            if (current_queue->current_node == NULL ||
-                current_queue->current_node->next == NULL)
-            {
-                current_queue->current_node = current_queue->front;
-                return current_queue->current_node->pid;
-            }
-            current_queue->current_node = current_queue->current_node->next;
-            return current_queue->current_node->pid;
         }
+        *time = current_queue->quanta;
+        return current_queue->front->pid;     
     }
     return -1;
 }
