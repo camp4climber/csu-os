@@ -39,7 +39,7 @@ void init(){
  * to age the scheduled processes and trigger feedback if needed.
  */
 void age(){
-    struct Node *temp;
+/*    struct Node *temp;
     if (queue1->front != NULL)
     {
         temp = queue1->front;
@@ -48,7 +48,7 @@ void age(){
         {
             temp = temp->next;
             temp->age++;
-            if (temp->age >= 1000)
+            if (temp->age > 1000)
             {
                 removeProcess(temp->pid);
                 addProcess(temp->pid, 0);
@@ -63,13 +63,13 @@ void age(){
         {
             temp = temp->next;
             temp->age++;
-            if (temp->age >= 1000)
+            if (temp->age > 1000)
             {
                 removeProcess(temp->pid);
                 addProcess(temp->pid, 0);
             }
         }
-    }
+    }*/
 }
 
 /**
@@ -193,6 +193,14 @@ int removeProcess(int pid){
             }
             else temp = temp->next;
         }
+        //only 1 node
+        if (temp_queue->front == temp_queue->back)
+        {
+            temp_queue->front = temp_queue->back = NULL;
+            free(temp);
+            return 1;
+        }
+        //front node
         if (temp == temp_queue->front)
         {
             temp_queue->front = temp->next;
@@ -200,6 +208,7 @@ int removeProcess(int pid){
             free(temp);
             return 1;
         }
+        //back node
         if (temp == temp_queue->back)
         {
             temp_queue->back = temp->previous;
@@ -207,6 +216,7 @@ int removeProcess(int pid){
             free(temp);
             return 1;
         }
+        //middle node
         temp->previous->next = temp->next;
         temp->next->previous = temp->previous;
         free(temp);
