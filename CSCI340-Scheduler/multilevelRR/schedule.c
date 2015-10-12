@@ -225,7 +225,11 @@ int nextProcess(int *time){
         }
         if (current_queue == queue1)
         {
-            current_queue = queue2;
+            if (queue2->front != NULL) current_queue = queue2;
+            else if (queue3->front != NULL) current_queue = queue3;
+            else if (queue4->front != NULL) current_queue = queue4;
+            else current_queue = queue1;
+
             *time = current_queue->quanta;
             //no current process or last process in queue 
             if (current_queue->current_node == NULL ||
@@ -239,7 +243,11 @@ int nextProcess(int *time){
         }
         if (current_queue == queue2)
         {
-            current_queue = queue3;
+            if (queue3->front != NULL) current_queue = queue3;
+            else if (queue4->front != NULL) current_queue = queue4;
+            else if (queue1->front != NULL) current_queue = queue1;
+            else current_queue = queue2;
+
             *time = current_queue->quanta;
             //no current process or last process in queue 
             if (current_queue->current_node == NULL ||
@@ -253,7 +261,11 @@ int nextProcess(int *time){
         }
         if (current_queue == queue3)
         {
-            current_queue = queue4;
+            if (queue4->front != NULL) current_queue = queue4;
+            else if (queue1->front != NULL) current_queue = queue1;
+            else if (queue2->front != NULL) current_queue = queue2;
+            else current_queue = queue3;
+
             *time = current_queue->quanta;
             //no current process or last process in queue 
             if (current_queue->current_node == NULL ||
@@ -267,7 +279,11 @@ int nextProcess(int *time){
         }
         if (current_queue == queue4)
         {
-            current_queue = queue1;
+            if (queue1->front != NULL) current_queue = queue1;
+            else if (queue2->front != NULL) current_queue = queue2;
+            else if (queue3->front != NULL) current_queue = queue3;
+            else current_queue = queue4;
+
             *time = current_queue->quanta;
             //no current process or last process in queue 
             if (current_queue->current_node == NULL ||
