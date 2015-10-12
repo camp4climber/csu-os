@@ -46,11 +46,17 @@ void age(){
     {
         temp = queue1->front;
         temp->age += 1;
+        if (temp->age >= 1000)
+        {
+            pid = temp->pid;
+            removeProcess(pid);
+            addProcess(pid, 0);
+        }
         while(temp->next != NULL)
         {
             temp = temp->next;
             temp->age++;
-            if (temp->age > 1000)
+            if (temp->age >= 1000)
             {
                 pid = temp->pid;
                 removeProcess(pid);
@@ -62,15 +68,21 @@ void age(){
     {
         temp = queue2->front;
         temp->age += 1;
+        if (temp->age >= 1000)
+        {
+            pid = temp->pid;
+            removeProcess(pid);
+            addProcess(pid, 1);
+        }
         while(temp->next != NULL)
         {
             temp = temp->next;
             temp->age++;
-            if (temp->age > 1000)
+            if (temp->age >= 1000)
             {
                 pid = temp->pid;
                 removeProcess(pid);
-                addProcess(pid, 0);
+                addProcess(pid, 1);
             }
         }
     }
@@ -248,21 +260,9 @@ int nextProcess(int *time){
             removeProcess(pid);
             return pid;
         }
-        else if (current_queue == NULL)
-        {
-            if (queue1->front != NULL) current_queue = queue1;
-            else if (queue2->front != NULL) current_queue = queue2;
-        }
-        else if (current_queue == queue1)
-        {
-            if (queue2->front != NULL) current_queue = queue2;
-            else if (queue1->front != NULL) current_queue = queue1;
-        }
-        else if (current_queue == queue2)
-        {
-            if (queue1->front != NULL) current_queue = queue1;
-            else if (queue2->front != NULL) current_queue = queue2;
-        }
+        if (queue1->front != NULL) current_queue = queue1;
+        else if (queue2->front != NULL) current_queue = queue2;
+
         *time = current_queue->quanta;
         pid = current_queue->front->pid;
         priority = current_queue->front->priority;
