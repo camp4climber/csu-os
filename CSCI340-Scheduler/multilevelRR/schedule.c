@@ -16,33 +16,17 @@ struct Node
 struct Queue 
 {
     int quanta;
+    struct Queue *next_queue;
     struct Node *front;
     struct Node *back;
     struct Node *current_node;
 };
 
-struct Queue* current_queue = NULL;
-
-struct Queue *queue1 = (struct Queue*)malloc(sizeof(struct Queue));
-queue1->quanta = 4;
-queue1->front = NULL;
-queue1->back = NULL;
-queue1->current_node = NULL;
-struct Queue *queue2 = (struct Queue*)malloc(sizeof(struct Queue));
-queue2->quanta = 3;
-queue2->front = NULL;
-queue2->back = NULL;
-queue2->current_node = NULL;
-struct Queue *queue3 = (struct Queue*)malloc(sizeof(struct Queue));
-queue3->quanta = 2;
-queue3->front = NULL;
-queue3->back = NULL;
-queue3->current_node = NULL;
-struct Queue *queue4 = (struct Queue*)malloc(sizeof(struct Queue));
-queue4->quanta = 1;
-queue4->front = NULL;
-queue4->back = NULL;
-queue4->current_node = NULL;
+struct Queue *current_queue = NULL;
+struct Queue *queue1 = NULL;
+struct Queue *queue2 = NULL;
+struct Queue *queue3 = NULL;
+struct Queue *queue4 = NULL;
 
 /**
  * Function to initialize any global variables for the scheduler.
@@ -62,40 +46,93 @@ int addProcess(int pid, int priority){
     struct Node *temp = (struct Node*)malloc(sizeof(struct Node));
     temp->pid = pid;
     temp->priority = priority;
+    temp->next = NULL;
+    temp->previous = NULL;
     switch(priority)
     {
         case 1:
+            if (queue1 == NULL)
+            {
+                queue1 = (struct Queue*)malloc(sizeof(struct Queue));
+                queue1->quanta = 4;
+                queue1->front = NULL;
+                queue1->back = NULL;
+                queue1->current_node = NULL;
+            }
             if (queue1->front == NULL && queue1->back == NULL)
             {
                 queue1->front = queue1->back = temp;
             }
-            break;
+            else
+            {
+                queue1->back->next = temp;
+                temp->previous = queue1->back;
+                queue1->back = temp;
+            }
+            return 1;
         case 2:
-            temp->quanta = 3;
-            break;
+            if (queue2 == NULL)
+            {
+                queue2 = (struct Queue*)malloc(sizeof(struct Queue));
+                queue2->quanta = 3;
+                queue2->front = NULL;
+                queue2->back = NULL;
+                queue2->current_node = NULL;
+            }
+            if (queue2->front == NULL && queue2->back == NULL)
+            {
+                queue2->front = queue2->back = temp;
+            }
+            else
+            {
+                queue2->back->next = temp;
+                temp->previous = queue2->back;
+                queue2->back = temp;
+            }
+            return 1;
         case 3: 
-            temp->quanta = 2;
-            break;
+            if (queue3 == NULL)
+            {
+                queue3 = (struct Queue*)malloc(sizeof(struct Queue));
+                queue3->quanta = 2;
+                queue3->front = NULL;
+                queue3->back = NULL;
+                queue3->current_node = NULL;
+            }
+            if (queue3->front == NULL && queue3->back == NULL)
+            {
+                queue3->front = queue3->back = temp;
+            }
+            else
+            {
+                queue3->back->next = temp;
+                temp->previous = queue3->back;
+                queue3->back = temp;
+            }
+            return 1;
         case 4:
-            temp->quanta = 1;
-            break;
+            if (queue4 == NULL)
+            {
+                queue4 = (struct Queue*)malloc(sizeof(struct Queue));
+                queue4->quanta = 1;
+                queue4->front = NULL;
+                queue4->back = NULL;
+                queue4->current_node = NULL;
+            }
+            if (queue4->front == NULL && queue4->back == NULL)
+            {
+                queue4->front = queue4->back = temp;
+            }
+            else
+            {
+                queue4->back->next = temp;
+                temp->previous = queue4->back;
+                queue4->back = temp;
+            }
+            return 1;
         default:
             return 0;
     }
-    temp->next = NULL;
-    temp->previous = NULL;
-    
-    if (hasProcess())
-    {
-        back->next = temp;
-        temp->previous = back;
-        back = temp;
-    }
-    else
-    {
-        front = back = temp;
-    }
-    return 1;
 }
 
 /**
@@ -108,32 +145,51 @@ int removeProcess(int pid){
     if (!hasProcess()) return 0;
     else
     {
-        struct Node *temp = front;
+        struct Queue *temp_queue = queue1; 
+        struct Node *temp = temp_queue->front;
         while (temp->pid != pid)
         {
-            if (temp->next == NULL) return 0;
+            if (temp->next == NULL && temp_queue == queue1) 
+            {
+                temp_queue = queue2;
+                temp = temp_queue->front;
+            }
+            else if (temp->next == NULL && temp_queue == queue2)
+            {
+                temp_queue = queue3;
+                temp = temp_queue->front;
+            }
+            else if (temp->next == NULL && temp_queue == queue3)
+            {
+                temp_queue = queue4;
+                temp = temp_queue->front;
+            }
+            else if (temp->next == NULL && temp_queue == queue4)
+            {
+                return 0;
+            }
             else temp = temp->next;
         }
         //only 1 node
-        if (front == back)
+        if (temp_queue->front == temp_queue->back)
         {
-            front = back = NULL;
+            temp_queue->front = temp_queue->back = NULL;
             free(temp);
             return 1;
         }
         //front node
-        if (temp == front)
+        if (temp == temp_queue->front)
         {
-            front = temp->next;
-            front->previous = NULL;
+            temp_queue->front = temp->next;
+            temp_queue->front->previous = NULL;
             free(temp);
             return 1;
         }
         //back node
-        if (temp == back)
+        if (temp == temp_queue->back)
         {
-            back = temp->previous;
-            back->next = NULL;
+            temp_queue->back = temp->previous;
+            temp_queue->back->next = NULL;
             free(temp);
             return 1;
         }
@@ -156,24 +212,75 @@ int nextProcess(int *time){
     else
     {
         //getting process for first time
-        if (current == NULL)
+        if (current_queue == NULL)
         {
-            current = front;
-            *time = current->quanta;
-            return current->pid;
+            if (queue1->front != NULL) current_queue = queue1;
+            else if (queue2->front != NULL) current_queue = queue2;
+            else if (queue3->front != NULL) current_queue = queue3;
+            else if (queue4->front != NULL) current_queue = queue4;
+
+            *time = current_queue->quanta;
+            current_queue->current_node = current_queue->front;
+            return current_queue->current_node->pid; 
         }
-        //back process
-        if (current->next == NULL)
+        if (current_queue == queue1)
         {
-            current = front;
-            *time = current->quanta;
-            return current->pid;
+            current_queue = queue2;
+            *time = current_queue->quanta;
+            //no current process or last process in queue 
+            if (current_queue->current_node == NULL ||
+                current_queue->current_node->next == NULL)
+            {
+                current_queue->current_node = current_queue->front;
+                return current_queue->current_node->pid;
+            }
+            current_queue->current_node = current_queue->current_node->next;
+            return current_queue->current_node->pid;
         }
-        //everything else
-        current = current->next;
-        *time = current->quanta;
-        return current->pid;
+        if (current_queue == queue2)
+        {
+            current_queue = queue3;
+            *time = current_queue->quanta;
+            //no current process or last process in queue 
+            if (current_queue->current_node == NULL ||
+                current_queue->current_node->next == NULL)
+            {
+                current_queue->current_node = current_queue->front;
+                return current_queue->current_node->pid;
+            }
+            current_queue->current_node = current_queue->current_node->next;
+            return current_queue->current_node->pid;
+        }
+        if (current_queue == queue3)
+        {
+            current_queue = queue4;
+            *time = current_queue->quanta;
+            //no current process or last process in queue 
+            if (current_queue->current_node == NULL ||
+                current_queue->current_node->next == NULL)
+            {
+                current_queue->current_node = current_queue->front;
+                return current_queue->current_node->pid;
+            }
+            current_queue->current_node = current_queue->current_node->next;
+            return current_queue->current_node->pid;
+        }
+        if (current_queue == queue4)
+        {
+            current_queue = queue1;
+            *time = current_queue->quanta;
+            //no current process or last process in queue 
+            if (current_queue->current_node == NULL ||
+                current_queue->current_node->next == NULL)
+            {
+                current_queue->current_node = current_queue->front;
+                return current_queue->current_node->pid;
+            }
+            current_queue->current_node = current_queue->current_node->next;
+            return current_queue->current_node->pid;
+        }
     }
+    return -1;
 }
 
 /**
@@ -183,5 +290,9 @@ int nextProcess(int *time){
  *		scheduled processes
  */
 int hasProcess(){
-    return (front == NULL && back == NULL) ? 0 : 1;
+    return (queue1->front == NULL && queue1->back == NULL &&
+            queue2->front == NULL && queue2->back == NULL &&
+            queue3->front == NULL && queue3->back == NULL &&
+            queue4->front == NULL && queue4->back == NULL) 
+            ? 0 : 1;
 }
