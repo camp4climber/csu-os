@@ -145,23 +145,38 @@ int removeProcess(int pid){
     if (!hasProcess()) return 0;
     else
     {
-        struct Queue *temp_queue = queue1; 
+        struct Queue *temp_queue; 
+
+        if (queue1->front != NULL) temp_queue = queue1; 
+        else if (queue2->front != NULL) temp_queue = queue2;
+        else if (queue3->front != NULL) temp_queue = queue3;
+        else temp_queue = queue4;
+
         struct Node *temp = temp_queue->front;
         while (temp->pid != pid)
         {
             if (temp->next == NULL && temp_queue == queue1) 
             {
-                temp_queue = queue2;
+                if (queue2->front != NULL) temp_queue = queue2;
+                else if (queue3->front != NULL) temp_queue = queue3;
+                else if (queue4->front != NULL) temp_queue = queue4;
+                else return 0;
+               
                 temp = temp_queue->front;
             }
             else if (temp->next == NULL && temp_queue == queue2)
             {
-                temp_queue = queue3;
+                if (queue3->front != NULL) temp_queue = queue3;
+                else if (queue4->front != NULL) temp_queue = queue4;
+                else return 0;
+                
                 temp = temp_queue->front;
             }
             else if (temp->next == NULL && temp_queue == queue3)
             {
-                temp_queue = queue4;
+                if (queue4->front != NULL) temp_queue = queue4;
+                else return 0;
+                
                 temp = temp_queue->front;
             }
             else if (temp->next == NULL && temp_queue == queue4)
@@ -173,6 +188,7 @@ int removeProcess(int pid){
         //only 1 node
         if (temp_queue->front == temp_queue->back)
         {
+            temp_queue->current_node = NULL;
             temp_queue->front = temp_queue->back = NULL;
             free(temp);
             return 1;
@@ -228,7 +244,7 @@ int nextProcess(int *time){
             if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
-            else current_queue = queue1;
+            else if (queue1->front != NULL) current_queue = queue1;
 
             *time = current_queue->quanta;
             //no current process or last process in queue 
@@ -246,7 +262,7 @@ int nextProcess(int *time){
             if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
             else if (queue1->front != NULL) current_queue = queue1;
-            else current_queue = queue2;
+            else if (queue2->front != NULL) current_queue = queue2;
 
             *time = current_queue->quanta;
             //no current process or last process in queue 
@@ -264,7 +280,7 @@ int nextProcess(int *time){
             if (queue4->front != NULL) current_queue = queue4;
             else if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
-            else current_queue = queue3;
+            else if (queue3->front != NULL) current_queue = queue3;
 
             *time = current_queue->quanta;
             //no current process or last process in queue 
@@ -282,7 +298,7 @@ int nextProcess(int *time){
             if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
-            else current_queue = queue4;
+            else if (queue4->front != NULL) current_queue = queue4;
 
             *time = current_queue->quanta;
             //no current process or last process in queue 
