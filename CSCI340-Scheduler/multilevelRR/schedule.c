@@ -221,26 +221,14 @@ int nextProcess(int *time){
     if (!hasProcess()) return -1;
     else
     { 
-        //getting process for first time
         if (current_queue == NULL)
         {
             if (queue1->front != NULL) current_queue = queue1;
             else if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
             else if (queue4->front != NULL) current_queue = queue4;
-
-            *time = current_queue->quanta;
-	    return current_queue->front->pid;
         }
-        if (current_queue->front != NULL)
-        {
-            int pid = current_queue->front->pid;
-            int priority = current_queue->front->priority;
-            removeProcess(pid);
-            addProcess(pid, priority);   
-        }
-        
-        if (current_queue == queue1)
+        else if (current_queue == queue1)
         {
             if (queue2->front != NULL) current_queue = queue2;
             else if (queue3->front != NULL) current_queue = queue3;
@@ -269,7 +257,11 @@ int nextProcess(int *time){
             else if (queue4->front != NULL) current_queue = queue4;
         }
         *time = current_queue->quanta;
-        return current_queue->front->pid;     
+        int pid = current_queue->front->pid;
+        int priority = current_queue->front->priority;
+        removeProcess(pid);
+        addProcess(pid, priority);
+        return pid;
     }
     return -1;
 }
