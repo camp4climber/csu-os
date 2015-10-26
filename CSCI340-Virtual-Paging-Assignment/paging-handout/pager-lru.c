@@ -42,7 +42,16 @@ void pageit(Pentry q[MAXPROCESSES]) {
 		initialized = 1;
 	}
 
-	/* TODO: Implement LRU Paging */
+	//for all processes
+	for (proctmp = 0; proctmp < MAXPROCESSES; proctmp++)
+	{
+		//update timestamps
+		pagetmp = q[proctmp].pc/PAGESIZE;
+		timestamps[proctmp][pagetmp] = tick;
+
+	}
+		
+
 	fprintf(stderr, "pager-lru not yet implemented. Exiting...\n");
 	exit(EXIT_FAILURE);
 
