@@ -31,6 +31,8 @@ void pageit(Pentry q[MAXPROCESSES]) {
 	/* Local vars */
 	int proctmp;
 	int pagetmp;
+	int evict = -1;
+	int ticktmp = tick;
 
 	/* initialize static vars on first run */
 	if (!initialized) {
@@ -49,11 +51,32 @@ void pageit(Pentry q[MAXPROCESSES]) {
 		pagetmp = q[proctmp].pc/PAGESIZE;
 		timestamps[proctmp][pagetmp] = tick;
 
+		//if we swapped in continue
+		if (pagein(proctmp, pagetmp))
+			continue;
+		
+		//lru for each page
+		for (pagetmp = 0; pagetmp < MAXPROCPAGES; pagetmp++)
+		{
+			//if page swapped out continue 
+			if (!q[proctmp].pages[pagetmp]) continue;
+
+			//is the timestamp less than our temp tick?
+			if (timestamps[proctmp][pagetmp] < ticktmp)
+			{
+				//set the new temp tick
+				ticktmp = timestamps[proctmp][pagetmp];
+				//our lru page to evict is now this one
+				evict = pagetmp;
+				//if our tick value is 1 or 0, no need to check other pages.
+				if (ticktmp<=1) break;
+			}
+		}
+		
+		//try to swap out
+		pageout(proctmp, evict);
 	}
 		
-
-	fprintf(stderr, "pager-lru not yet implemented. Exiting...\n");
-	exit(EXIT_FAILURE);
 
 	/* advance time for next pageit iteration */
 	tick++;
