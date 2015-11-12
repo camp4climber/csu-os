@@ -2,6 +2,9 @@
 #include <string.h>
 #include "multi-lookup.h"
 
+pthread_mutex_t queueMutex;
+pthread_mutex_t outputMutex;
+
 int main(int argc, char *argv[])
 {
 	if (argc < MIN_ARGS)
