@@ -25,15 +25,34 @@ using namespace std;
 pid_t   childpid;
 timeval t1, t2, rt1, rt2;
 int numtests;
-double elapsedTime, rtTime, maxTime, minTime, avgTime;
+double elapsedTime=0, rtTime=0, totalTime=0, maxTime=0, minTime=0, avgTime=0;
 
 //For Child
-void sigusr1_handler(int sig){	
+void sigusr1_handler(int sig){
+	gettimeofday(&rt2, NULL);
+	rtTime = (rt2.tv_sec - rt1.tv_sec) * 1000.0;
+	rtTime += (rt2.tv_usec - rt1.tv_usec) * 1000.0;
+	totalTime += rtTime;
+	if (rtTime > maxTime)
+		maxTime = rtTime;
+	if (rtTime < minTime || minTime == 0)
+		minTime = rtTime;
+	gettimeofday(&rt1, NULL);
+	kill(getppid(), SIGUSR2);
 }
 
 //For Parent
 void sigusr2_handler(int sig){ 
-	
+	gettimeofday(&rt2, NULL);
+	rtTime = (rt2.tv_sec - rt1.tv_sec) * 1000.0;
+	rtTime += (rt2.tv_usec - rt1.tv_usec) * 1000.0;
+	totalTime += rtTime;
+	if (rtTime > maxTime)
+		maxTime = rtTime;
+	if (rtTime < minTime || minTime == 0)
+		minTime = rtTime;
+	gettimeofday(&rt1, NULL);
+	kill(childpid, SIGUSR1);
 }
 
 void sigint_handler(int sig){
