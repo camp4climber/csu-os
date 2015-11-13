@@ -9,3 +9,12 @@
 #define MIN_RESOLVER_THREADS 2
 #define MAX_NAME_LENGTH 1025
 #define MAX_IP_LENGTH INET6_ADDRSTRLEN
+
+int req_done = 0;
+queue request_queue;
+pthread_mutex_t queue_mutex;
+pthread_mutex_t output_mutex;
+FILE* output_file = NULL;
+
+void* requester(void *filename);
+void* resolver();

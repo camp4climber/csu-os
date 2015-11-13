@@ -5,15 +5,6 @@
 #include "multi-lookup.h"
 #include "queue.h"
 
-int req_done = 0;
-queue request_queue;
-pthread_mutex_t queue_mutex;
-pthread_mutex_t output_mutex;
-FILE* output_file = NULL;
-
-void* requester(void *filename);
-void* resolver();
-
 int main(int argc, char *argv[])
 {
 	int i;
