@@ -51,5 +51,16 @@ void requester(char *file_name)
 //We'll have a minimum of 2 threads doing this.
 void resolver()
 {
-
+	//while q not empty or requesters still working
+		//lock q mutex
+		//if q not empty
+			//pop q host
+			//if host
+				//unlock q mutex
+				//dnsresolve
+				//lock out mutex
+				//write to output
+				//unlock out mutex
+		//else
+			//unlock q mutex
 }
