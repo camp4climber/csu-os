@@ -26,6 +26,18 @@ int main(int argc, char *argv[])
 		return 1;
 	} 
 
+	//for each input file
+		//spawn a requester thread
+
+	//for however many resolver threads 
+		//spawn a resolver thread		
+
+	//for all of the request threads
+		//join
+
+	//for all resolver threads
+		//join
+
 	return 0;
 }
 
